@@ -17,7 +17,7 @@ interface ExamResult {
   trend: 'up' | 'down' | 'same';
 }
 
-const API_URL = 'http://192.168.1.34:5000/api/results';
+const API_URL = 'https://crafted-1.onrender.com/api/results';
 
 export default function StudentResults() {
   const [results, setResults] = useState<ExamResult[]>([]);

@@ -6,7 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { BookOpen, Calendar, Award, Play, Clock, Bell, ChevronRight } from 'lucide-react-native';
 
-const BASE_URL = "http://192.168.1.34:5000/api/students";
+const BASE_URL = "https://crafted-1.onrender.com/api/students";
 
 interface QuickLinkProps {
   title: string;

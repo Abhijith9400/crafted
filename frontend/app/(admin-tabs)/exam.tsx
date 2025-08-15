@@ -15,7 +15,7 @@ import axios from "axios";
 import { Plus, Edit3, Trash2, Calendar, FileText, Users } from "lucide-react-native";
 
 // Use your backend's IP (replace localhost with machine IP if testing on a phone)
-const API_URL = "http://192.168.1.34:5000/exams";
+const API_URL = "https://crafted-1.onrender.com/exams";
 
 interface ExamEntry {
   _id: string;
@@ -123,7 +123,7 @@ form.append("file", file as unknown as Blob); // 👈 Alternative type fix
   }
 };
 const handleViewPDF = async (fileName: string) => {
-  const pdfUrl = `http://192.168.1.34:5000/uploads/${fileName}`;
+  const pdfUrl = `https://crafted-1.onrender.com/uploads/${fileName}`;
   try {
     await WebBrowser.openBrowserAsync(pdfUrl);
   } catch (error) {

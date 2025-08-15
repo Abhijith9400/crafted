@@ -13,7 +13,7 @@ export default function StudentProfile() {
   const [editData, setEditData] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const BASE_URL = "http://192.168.1.34:5000/api/students";
+  const BASE_URL = "https://crafted-1.onrender.com/api/students";
 
   // Fetch profile
   const fetchProfile = async () => {

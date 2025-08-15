@@ -82,7 +82,7 @@ export default function AdminDashboard() {
   // Fetch stats from backend
   const fetchStats = async () => {
     try {
-      const res = await axios.get("http://192.168.1.34:5000/api/stats");
+      const res = await axios.get("https://crafted-1.onrender.com/api/stats");
       setStats(res.data);
     } catch (err) {
       console.error(err);

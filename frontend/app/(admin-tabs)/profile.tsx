@@ -51,7 +51,7 @@ export default function AdminProfile() {
 
   const fetchStats = async () => {
     try {
-      const res = await axios.get('http://192.168.1.34:5000/api/stats'); // Replace with your API URL
+      const res = await axios.get('https://crafted-1.onrender.com/api/stats'); // Replace with your API URL
       setStats(res.data);
     } catch (err) {
       console.error('Failed to fetch stats:', err);

@@ -12,7 +12,7 @@ interface ExamEntry {
   fileName: string;
 }
 
-const API_URL = "http://192.168.1.34:5000/exams";
+const API_URL = "https://crafted-1.onrender.com/exams";
 
 export default function StudentExams() {
   const [exams, setExams] = useState<ExamEntry[]>([]);
@@ -32,7 +32,7 @@ export default function StudentExams() {
   }, []);
 
   const handleViewPDF = async (fileName: string) => {
-    const pdfUrl = `http://192.168.1.34:5000/uploads/${fileName}`;
+    const pdfUrl = `https://crafted-1.onrender.com/uploads/${fileName}`;
     try {
       await WebBrowser.openBrowserAsync(pdfUrl);
     } catch (error) {

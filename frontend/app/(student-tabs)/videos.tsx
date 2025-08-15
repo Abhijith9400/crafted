@@ -10,7 +10,7 @@ interface Course {
   videoUrl?: string;
 }
 
-const API_URL = 'http://192.168.1.34:5000/api/courses';
+const API_URL = 'https://crafted-1.onrender.com/api/courses';
 
 export default function StudentCourses() {
   const [courses, setCourses] = useState<Course[]>([]);

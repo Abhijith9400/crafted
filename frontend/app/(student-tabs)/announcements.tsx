@@ -11,7 +11,7 @@ interface Announcement {
   priority: "low" | "medium" | "high";
 }
 
-const API_URL = "http://192.168.1.34:5000/api/announcements"; // ← match backend IP
+const API_URL = "https://crafted-1.onrender.com/api/announcements"; // ← match backend IP
 
 export default function StudentAnnouncements() {
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);

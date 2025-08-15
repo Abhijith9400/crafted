@@ -39,7 +39,7 @@ export default function AdminStudents() {
   // Load students
   const fetchStudents = async () => {
     try {
-      const res = await fetch("http://192.168.1.34:5000/api/students");
+      const res = await fetch("https://crafted-1.onrender.com/api/students");
       const data = await res.json();
       setStudents(data);
     } catch (err) {
@@ -63,8 +63,8 @@ export default function AdminStudents() {
     try {
       const method = editingId ? "PATCH" : "POST";
       const url = editingId
-        ? `http://192.168.1.34:5000/api/students/${editingId}`
-        : "http://192.168.1.34:5000/api/students";
+        ? `https://crafted-1.onrender.com/api/students/${editingId}`
+        : "https://crafted-1.onrender.com/api/students";
 
       const payload = editingId
         ? { ...formData, ...(formData.password ? { password: formData.password } : {}) }
@@ -98,7 +98,7 @@ export default function AdminStudents() {
       {
         text: "Yes", onPress: async () => {
           try {
-            await fetch(`http://192.168.1.34:5000/api/students/${id}`, { method: "DELETE" });
+            await fetch(`https://crafted-1.onrender.com/api/students/${id}`, { method: "DELETE" });
             fetchStudents();
           } catch (err) {
             console.error("Delete failed", err);

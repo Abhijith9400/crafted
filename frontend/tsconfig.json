@@ -3,10 +3,12 @@
   "compilerOptions": {
     "strict": true,
     "paths": {
-      "@/*": ["./*"],
-        
-    "typeRoots": ["./types", "./node_modules/@types"]
-    }
+      "@/*": ["./*"]
+    },
+    "typeRoots": ["./types", "./node_modules/@types"],
+    "types": ["react", "react-native"],
+    "jsx": "react-jsx",
+    "moduleResolution": "node"
   },
   "include": [
     "**/*.ts",
@@ -15,5 +17,4 @@
     "expo-env.d.ts",
     "nativewind-env.d.ts"
   ]
-  
 }

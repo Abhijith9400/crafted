@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import axios from 'axios';
 
-const API_URL = 'http://192.168.1.34:5000/api/results';
+const API_URL = 'https://crafted-1.onrender.com/api/results';
 
 interface Result {
   _id: string;

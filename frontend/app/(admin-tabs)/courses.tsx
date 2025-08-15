@@ -14,7 +14,7 @@
     videoUrl?: string;
   }
 
-  const API_URL = 'http://192.168.1.34:5000/api/courses'; // <-- Change to your backend
+  const API_URL = 'https://crafted-1.onrender.com/api/courses'; // <-- Change to your backend
 
   export default function AdminCourses() {
     const [courses, setCourses] = useState<Course[]>([]);
@@ -33,7 +33,7 @@
     // Fetch courses
     const fetchCourses = async () => {
       try {
-        const res = await fetch('http://192.168.1.34:5000/api/courses');
+        const res = await fetch('https://crafted-1.onrender.com/api/courses');
         const data = await res.json();
         setCourses(data);
       } catch (error) {
@@ -68,7 +68,7 @@
             body: JSON.stringify(payload),
           });
         } else {
-          await fetch('http://192.168.1.34:5000/api/courses', {
+          await fetch('https://crafted-1.onrender.com/api/courses', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload),

@@ -13,7 +13,7 @@ import {
 import axios from "axios";
 import { Plus, Edit3, Trash2 } from "lucide-react-native";
 
-const API_URL = "http://192.168.1.34:5000/api/timetable";
+const API_URL = "https://crafted-1.onrender.com/api/timetable";
 
 interface TimetableEntry {
   id: string;

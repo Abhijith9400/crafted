@@ -21,7 +21,7 @@ export default function StudentLogin() {
     setLoading(true);
 
     try {
-      const res = await fetch("http://192.168.1.34:5000/api/students/login", { 
+      const res = await fetch("https://crafted-1.onrender.com/api/students/login", { 
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ studentId, password })

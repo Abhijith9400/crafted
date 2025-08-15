@@ -25,7 +25,7 @@ interface Announcement {
   priority: "low" | "medium" | "high";
 }
 
-const API_URL = "http://192.168.1.34:5000/api/announcements"; // ← Change YOUR_IP
+const API_URL = "https://crafted-1.onrender.com/api/announcements"; // ← Change YOUR_IP
 
 export default function AdminAnnouncements() {
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
