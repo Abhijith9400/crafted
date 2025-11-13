@@ -1,37 +1,13 @@
 const express = require("express");
 const router = express.Router();
-const multer = require("multer");
-const path = require("path");
-const fs = require("fs");
 const Exam = require("../models/Exam");
 
-// Ensure uploads directory exists
-const uploadDir = path.join(__dirname, "..", "uploads");
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir);
-}
+// ⬇️ NEW: Cloudinary upload
+const upload = require("../config/cloudinaryStorage");
 
-// Multer configuration
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, uploadDir);
-  },
-  filename: function (req, file, cb) {
-    const uniqueName = `${Date.now()}${path.extname(file.originalname)}`;
-    cb(null, uniqueName);
-  },
-});
-
-const upload = multer({
-  storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
-  fileFilter: (req, file, cb) => {
-    if (file.mimetype === "application/pdf") cb(null, true);
-    else cb(new Error("Only PDF files are allowed"), false);
-  },
-});
-
-// ✅ GET all exams
+// -------------------------------
+// GET all exams
+// -------------------------------
 router.get("/", async (req, res) => {
   try {
     const exams = await Exam.find().sort({ createdAt: -1 });
@@ -42,10 +18,15 @@ router.get("/", async (req, res) => {
   }
 });
 
-// ✅ POST create new exam
+// -------------------------------
+// CREATE new exam
+// -------------------------------
 router.post("/add", upload.single("pdf"), async (req, res) => {
+ 
   try {
-    const { subject, title, date } = req.body;
+    const { subject, title, date, targetType, targetValue} = req.body;
+     
+
     if (!req.file) {
       return res.status(400).json({ error: "PDF file is required" });
     }
@@ -54,7 +35,11 @@ router.post("/add", upload.single("pdf"), async (req, res) => {
       subject,
       title,
       date,
-      pdf: req.file.filename,
+      targetType,
+      targetValue,
+      pdf: req.file.originalname, // display name
+      pdfUrl: req.file.path,      // cloudinary URL path
+      cloudinaryId: req.file.filename, // store this for delete later
     });
 
     await newExam.save();
@@ -65,18 +50,29 @@ router.post("/add", upload.single("pdf"), async (req, res) => {
   }
 });
 
-// ✅ PUT update exam
+// -------------------------------
+// UPDATE exam
+// -------------------------------
 router.put("/:id", upload.single("pdf"), async (req, res) => {
   try {
-    const { subject, title, date } = req.body;
     const exam = await Exam.findById(req.params.id);
     if (!exam) return res.status(404).json({ error: "Exam not found" });
 
-    // Delete old file if new one is uploaded
-    if (req.file && exam.pdf) {
-      const oldFilePath = path.join(uploadDir, exam.pdf);
-      if (fs.existsSync(oldFilePath)) fs.unlinkSync(oldFilePath);
-      exam.pdf = req.file.filename;
+    const { subject, title, date } = req.body;
+
+    // If new PDF uploaded → delete old one from Cloudinary
+    if (req.file) {
+      const cloudinary = require("../config/cloudinary");
+
+      if (exam.cloudinaryId) {
+        await cloudinary.uploader.destroy(exam.cloudinaryId, {
+          resource_type: "raw",
+        });
+      }
+
+      exam.pdf = req.file.originalname;
+      exam.pdfUrl = req.file.path;
+      exam.cloudinaryId = req.file.filename;
     }
 
     exam.subject = subject || exam.subject;
@@ -91,15 +87,21 @@ router.put("/:id", upload.single("pdf"), async (req, res) => {
   }
 });
 
-// ✅ DELETE exam
+// -------------------------------
+// DELETE exam
+// -------------------------------
 router.delete("/:id", async (req, res) => {
   try {
     const exam = await Exam.findById(req.params.id);
     if (!exam) return res.status(404).json({ error: "Exam not found" });
 
-    // Delete PDF file
-    const filePath = path.join(uploadDir, exam.pdf);
-    if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+    // Delete from Cloudinary
+    const cloudinary = require("../config/cloudinary");
+    if (exam.cloudinaryId) {
+      await cloudinary.uploader.destroy(exam.cloudinaryId, {
+        resource_type: "raw",
+      });
+    }
 
     await exam.deleteOne();
     res.json({ message: "Exam deleted" });
