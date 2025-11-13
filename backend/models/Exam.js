@@ -1,3 +1,4 @@
+// backend/models/Exam.js
 const mongoose = require("mongoose");
 
 const examSchema = new mongoose.Schema(
@@ -6,7 +7,6 @@ const examSchema = new mongoose.Schema(
     title: { type: String, required: true },
     date: { type: String, required: true },
 
-    // ⭐ VERY IMPORTANT (Fix student ID undefined)
     targetType: {
       type: String,
       enum: ["batch", "student"],
@@ -17,10 +17,9 @@ const examSchema = new mongoose.Schema(
       required: true
     },
 
-    // Uploaded PDF fields
-    pdf: String,          // original file name
-    pdfUrl: String,       // cloudinary URL
-    cloudinaryId: String, // cloudinary file reference
+    pdf: String,          // original filename
+    pdfUrl: String,       // cloudinary URL (secure)
+    cloudinaryId: String, // cloudinary public id
   },
   { timestamps: true }
 );

@@ -1,13 +1,11 @@
+// backend/routes/exams.js
 const express = require("express");
 const router = express.Router();
 const Exam = require("../models/Exam");
+const upload = require("../config/cloudinaryStorage"); // multer-storage-cloudinary
+const cloudinary = require("../config/cloudinary");
 
-// ⬇️ NEW: Cloudinary upload
-const upload = require("../config/cloudinaryStorage");
-
-// -------------------------------
 // GET all exams
-// -------------------------------
 router.get("/", async (req, res) => {
   try {
     const exams = await Exam.find().sort({ createdAt: -1 });
@@ -18,17 +16,14 @@ router.get("/", async (req, res) => {
   }
 });
 
-// -------------------------------
 // CREATE new exam
-// -------------------------------
 router.post("/add", upload.single("pdf"), async (req, res) => {
- 
-  try {
-    const { subject, title, date, targetType, targetValue} = req.body;
-     console.log("REQ BODY →", req.body);
-console.log("REQ FILE →", req.file);
-console.log("REQ HEADERS →", req.headers["content-type"]);
+  console.log("🔥 POST /exams/add");
+  console.log("BODY →", req.body);
+  console.log("FILE →", req.file && { path: req.file.path, filename: req.file.filename });
 
+  try {
+    const { subject, title, date, targetType, targetValue } = req.body;
 
     if (!req.file) {
       return res.status(400).json({ error: "PDF file is required" });
@@ -40,9 +35,9 @@ console.log("REQ HEADERS →", req.headers["content-type"]);
       date,
       targetType,
       targetValue,
-      pdf: req.file.originalname, // display name
-      pdfUrl: req.file.path,      // cloudinary URL path
-      cloudinaryId: req.file.filename, // store this for delete later
+      pdf: req.file.originalname || req.file.filename,
+      pdfUrl: req.file.path,      // cloudinary URL
+      cloudinaryId: req.file.filename, // cloudinary public id
     });
 
     await newExam.save();
@@ -53,34 +48,39 @@ console.log("REQ HEADERS →", req.headers["content-type"]);
   }
 });
 
-// -------------------------------
 // UPDATE exam
-// -------------------------------
 router.put("/:id", upload.single("pdf"), async (req, res) => {
+  console.log("🔥 PUT /exams/:id", req.params.id);
+  console.log("BODY →", req.body);
+  console.log("FILE →", req.file && { path: req.file.path, filename: req.file.filename });
+
   try {
     const exam = await Exam.findById(req.params.id);
     if (!exam) return res.status(404).json({ error: "Exam not found" });
 
-    const { subject, title, date } = req.body;
+    const { subject, title, date, targetType, targetValue } = req.body;
 
     // If new PDF uploaded → delete old one from Cloudinary
     if (req.file) {
-      const cloudinary = require("../config/cloudinary");
-
       if (exam.cloudinaryId) {
-        await cloudinary.uploader.destroy(exam.cloudinaryId, {
-          resource_type: "raw",
-        });
+        try {
+          await cloudinary.uploader.destroy(exam.cloudinaryId, { resource_type: "raw" });
+        } catch (e) {
+          console.warn("Cloudinary delete warning:", e.message || e);
+        }
       }
 
-      exam.pdf = req.file.originalname;
+      exam.pdf = req.file.originalname || req.file.filename;
       exam.pdfUrl = req.file.path;
       exam.cloudinaryId = req.file.filename;
     }
 
-    exam.subject = subject || exam.subject;
-    exam.title = title || exam.title;
-    exam.date = date || exam.date;
+    // update fields
+    exam.subject = subject ?? exam.subject;
+    exam.title = title ?? exam.title;
+    exam.date = date ?? exam.date;
+    exam.targetType = targetType ?? exam.targetType;
+    exam.targetValue = targetValue ?? exam.targetValue;
 
     await exam.save();
     res.json({ message: "Exam updated", exam });
@@ -90,20 +90,18 @@ router.put("/:id", upload.single("pdf"), async (req, res) => {
   }
 });
 
-// -------------------------------
 // DELETE exam
-// -------------------------------
 router.delete("/:id", async (req, res) => {
   try {
     const exam = await Exam.findById(req.params.id);
     if (!exam) return res.status(404).json({ error: "Exam not found" });
 
-    // Delete from Cloudinary
-    const cloudinary = require("../config/cloudinary");
     if (exam.cloudinaryId) {
-      await cloudinary.uploader.destroy(exam.cloudinaryId, {
-        resource_type: "raw",
-      });
+      try {
+        await cloudinary.uploader.destroy(exam.cloudinaryId, { resource_type: "raw" });
+      } catch (e) {
+        console.warn("Cloudinary delete warning:", e.message || e);
+      }
     }
 
     await exam.deleteOne();
