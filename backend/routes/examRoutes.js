@@ -25,7 +25,10 @@ router.post("/add", upload.single("pdf"), async (req, res) => {
  
   try {
     const { subject, title, date, targetType, targetValue} = req.body;
-     
+     console.log("REQ BODY →", req.body);
+console.log("REQ FILE →", req.file);
+console.log("REQ HEADERS →", req.headers["content-type"]);
+
 
     if (!req.file) {
       return res.status(400).json({ error: "PDF file is required" });
