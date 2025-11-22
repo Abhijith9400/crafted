@@ -4,7 +4,10 @@ const examSchema = new mongoose.Schema({
   subject: String,
   title: String,
   date: String,
-  pdf: String, // stores the filename of the uploaded PDF
+  pdf: String,              // filename
+  targetType: String,       // "batch" | "student"
+  targetValue: String,      // batch name OR student ID
 });
+
 
 module.exports = mongoose.model("Exam", examSchema);
