@@ -45,6 +45,8 @@ router.get("/", async (req, res) => {
 // ✅ POST create new exam
 router.post("/add", upload.single("pdf"), async (req, res) => {
   try {
+    console.log("BODY ON /exams/add →", req.body);   // 👈 ADD THIS LINE
+
     const { subject, title, date, targetType, targetValue } = req.body;
 
     if (!req.file) {
@@ -67,6 +69,7 @@ router.post("/add", upload.single("pdf"), async (req, res) => {
     res.status(500).json({ error: "Failed to create exam" });
   }
 });
+
 
 // ✅ PUT update exam
 router.put("/:id", upload.single("pdf"), async (req, res) => {
