@@ -5,7 +5,14 @@ const Timetable = require("../models/Timetable");
 // Create
 router.post("/", async (req, res) => {
   try {
-    const newEntry = new Timetable(req.body);
+    const { day, time, subject, teacher, studentId } = req.body;
+    const newEntry = new Timetable({
+      day,
+      time,
+      subject,
+      teacher,
+      studentId: studentId || null,
+    });
     const saved = await newEntry.save();
     res.status(201).json(saved);
   } catch (err) {

@@ -45,7 +45,7 @@ router.get("/", async (req, res) => {
 // ✅ POST create new exam
 router.post("/add", upload.single("pdf"), async (req, res) => {
   try {
-    const { subject, title, date } = req.body;
+    const { subject, title, date, studentId } = req.body;
     if (!req.file) {
       return res.status(400).json({ error: "PDF file is required" });
     }
@@ -54,6 +54,7 @@ router.post("/add", upload.single("pdf"), async (req, res) => {
       subject,
       title,
       date,
+      studentId: studentId || null,
       pdf: req.file.filename,
     });
 
