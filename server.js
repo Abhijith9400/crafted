@@ -30,7 +30,7 @@ app.use("/api/items", itemRoutes);
 app.use("/api/students", studentRoutes);
 app.use("/api/courses", courseRoutes);
 app.use("/api/announcements", announcementRoutes);
-app.use("/exams", examRoutes);
+app.use("/api/exams", examRoutes);
 app.use("/api/timetable", timetableRoutes);
 app.use('/api/admin', adminRoutes);
 app.use("/api/results", resultRoutes);
