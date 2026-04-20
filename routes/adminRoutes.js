@@ -41,6 +41,86 @@ router.post('/', async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: 'Failed to create admin profile' });
   }
+});const User = require('../models/User');
+const bcrypt = require('bcryptjs');
+
+// ================= TEACHER MANAGEMENT =================
+
+router.get('/teachers', async (req, res) => {
+  try {
+    const teachers = await User.find({ role: 'teacher' }).select('-password');
+    res.json(teachers);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch teachers' });
+  }
+});
+
+router.post('/teachers', async (req, res) => {
+  try {
+    const { name, email, password } = req.body;
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email and password are required' });
+    }
+    
+    const existing = await User.findOne({ username: email, role: 'teacher' });
+    if (existing) {
+      return res.status(400).json({ error: 'Teacher with this email already exists' });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newTeacher = new User({
+      username: email,
+      email,
+      name,
+      password: hashedPassword,
+      role: 'teacher'
+    });
+    const saved = await newTeacher.save();
+    saved.password = undefined;
+    res.status(201).json(saved);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to create teacher' });
+  }
+});
+
+router.patch('/teachers/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    let { name, email, password } = req.body;
+    const teacher = await User.findById(id);
+    if (!teacher || teacher.role !== 'teacher') {
+      return res.status(404).json({ error: 'Teacher not found' });
+    }
+    
+    if (email && email !== teacher.email) {
+      const existing = await User.findOne({ username: email, role: 'teacher' });
+      if (existing) {
+        return res.status(400).json({ error: 'Teacher with this email already exists' });
+      }
+      teacher.email = email;
+      teacher.username = email;
+    }
+    if (name) teacher.name = name;
+    if (password) {
+      teacher.password = await bcrypt.hash(password, 10);
+    }
+    
+    const updated = await teacher.save();
+    updated.password = undefined;
+    res.json(updated);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to update teacher' });
+  }
+});
+
+router.delete('/teachers/:id', async (req, res) => {
+  try {
+    const deleted = await User.findOneAndDelete({ _id: req.params.id, role: 'teacher' });
+    if (!deleted) return res.status(404).json({ error: 'Teacher not found' });
+    res.json({ message: 'Teacher deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to delete teacher' });
+  }
 });
 
 module.exports = router;

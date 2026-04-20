@@ -13,6 +13,8 @@ const UserSchema = new mongoose.Schema({
       return this.role === "student"; // only required for student
     }
   },
+  email: { type: String },
+  name: { type: String },
   password: { type: String, required: true },
   role: { type: String, enum: ["admin", "student", "teacher"], required: true }
 });
