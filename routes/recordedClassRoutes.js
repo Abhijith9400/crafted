@@ -48,4 +48,22 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
+// UPDATE recorded class
+router.put('/:id', async (req, res) => {
+  try {
+    const { title, description, youtube_id, course_id } = req.body;
+    const updatedClass = await RecordedClass.findByIdAndUpdate(
+      req.params.id,
+      { title, description, youtube_id, course_id },
+      { new: true }
+    );
+    if (!updatedClass) {
+      return res.status(404).json({ error: 'Recorded class not found' });
+    }
+    res.json(updatedClass);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to update recorded class' });
+  }
+});
+
 module.exports = router;
