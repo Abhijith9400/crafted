@@ -45,7 +45,7 @@ router.get("/", async (req, res) => {
 // ✅ POST create new exam
 router.post("/add", upload.single("pdf"), async (req, res) => {
   try {
-    const { subject, title, date, studentId } = req.body;
+    const { subject, title, date, studentId, exam_type, starts_at, duration_minutes } = req.body;
     if (!req.file) {
       return res.status(400).json({ error: "PDF file is required" });
     }
@@ -56,6 +56,9 @@ router.post("/add", upload.single("pdf"), async (req, res) => {
       date,
       studentId: studentId || null,
       pdf: req.file.filename,
+      exam_type: exam_type || "unit_test",
+      starts_at: starts_at || null,
+      duration_minutes: duration_minutes ? Number(duration_minutes) : 60,
     });
 
     await newExam.save();
@@ -69,7 +72,7 @@ router.post("/add", upload.single("pdf"), async (req, res) => {
 // ✅ PUT update exam
 router.put("/:id", upload.single("pdf"), async (req, res) => {
   try {
-    const { subject, title, date } = req.body;
+    const { subject, title, date, exam_type, starts_at, duration_minutes } = req.body;
     const exam = await Exam.findById(req.params.id);
     if (!exam) return res.status(404).json({ error: "Exam not found" });
 
@@ -83,6 +86,9 @@ router.put("/:id", upload.single("pdf"), async (req, res) => {
     exam.subject = subject || exam.subject;
     exam.title = title || exam.title;
     exam.date = date || exam.date;
+    if (exam_type) exam.exam_type = exam_type;
+    if (starts_at !== undefined) exam.starts_at = starts_at || null;
+    if (duration_minutes) exam.duration_minutes = Number(duration_minutes);
 
     await exam.save();
     res.json({ message: "Exam updated", exam });
