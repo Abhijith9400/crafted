@@ -30,7 +30,7 @@ router.get("/:id", async (req, res) => {
 // ================= ADD NEW STUDENT =================
 router.post("/", async (req, res) => {
   try {
-    const { studentId, password, name, email, phone, course, status } = req.body;
+    const { studentId, password, name, email, phone, course, status, batch } = req.body;
 
     if (!studentId || !password || !name || !email || !course) {
       return res.status(400).json({ message: "Please fill all required fields" });
@@ -55,6 +55,7 @@ router.post("/", async (req, res) => {
       phone,
       course,
       status,
+      batch,
     });
 
     await newStudent.save();
@@ -149,6 +150,7 @@ router.post("/login", async (req, res) => {
         email: student.email,
         phone: student.phone,
         course: student.course,
+        batch: student.batch,
         status: student.status,
         createdAt: student.createdAt,
       },

@@ -57,7 +57,7 @@ router.get('/teachers', async (req, res) => {
 
 router.post('/teachers', async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, phone, subject } = req.body;
     if (!email || !password) {
       return res.status(400).json({ error: 'Email and password are required' });
     }
@@ -73,7 +73,9 @@ router.post('/teachers', async (req, res) => {
       email,
       name,
       password: hashedPassword,
-      role: 'teacher'
+      role: 'teacher',
+      phone: phone || "",
+      subject: subject || "Physics"
     });
     const saved = await newTeacher.save();
     saved.password = undefined;
@@ -86,7 +88,7 @@ router.post('/teachers', async (req, res) => {
 router.patch('/teachers/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    let { name, email, password } = req.body;
+    let { name, email, password, phone, subject } = req.body;
     const teacher = await User.findById(id);
     if (!teacher || teacher.role !== 'teacher') {
       return res.status(404).json({ error: 'Teacher not found' });
@@ -104,6 +106,8 @@ router.patch('/teachers/:id', async (req, res) => {
     if (password) {
       teacher.password = await bcrypt.hash(password, 10);
     }
+    if (phone !== undefined) teacher.phone = phone;
+    if (subject !== undefined) teacher.subject = subject;
     
     const updated = await teacher.save();
     updated.password = undefined;
