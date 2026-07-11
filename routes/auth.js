@@ -56,11 +56,26 @@ router.post("/teacher-login", async (req, res) => {
 router.post("/parent-login", async (req, res) => {
     const { username, password } = req.body;
     try {
-        const parent = await User.findOne({
+        let parent = await User.findOne({
             $or: [{ username }, { email: username }],
             role: "parent",
             status: "active"
         }).populate("linkedStudentId");
+
+        if (!parent) {
+            const linkedStudent = await Student.findOne({
+                $or: [{ studentId: username }, { email: username }]
+            });
+
+            if (linkedStudent) {
+                parent = await User.findOne({
+                    role: "parent",
+                    status: "active",
+                    linkedStudentId: linkedStudent._id
+                }).populate("linkedStudentId");
+            }
+        }
+
         if (!parent) return res.status(400).json({ msg: "Parent account not found" });
 
         const isMatch = await bcrypt.compare(password, parent.password);

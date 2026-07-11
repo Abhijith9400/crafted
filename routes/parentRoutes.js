@@ -109,7 +109,14 @@ router.get("/me", auth, async (req, res) => {
           { studentId: "", batch: "" },
         ],
       }).sort({ createdAt: -1 }),
-      Exam.find().sort({ createdAt: -1 }),
+      Exam.find({
+        $or: [
+          { studentId: { $in: [studentObjectId.toString(), student.studentId] } },
+          { studentId: null },
+          { studentId: "" },
+          { studentId: { $exists: false } },
+        ],
+      }).sort({ createdAt: -1 }),
       RecordedClass.find().sort({ createdAt: -1 }),
       User.find({ role: "teacher" }).select("-password").sort({ name: 1 }),
       ParentActivityControl.findOne({ parent: parent._id, student: studentObjectId }),
