@@ -14,6 +14,7 @@ const auth = require("../middleware/authMiddleware");
 const router = express.Router();
 
 const findStudent = async (studentId) => {
+  if (!studentId) return null;
   const studentQuery = mongoose.isValidObjectId(studentId)
     ? { $or: [{ _id: studentId }, { studentId }] }
     : { studentId };
@@ -80,7 +81,11 @@ router.post("/", async (req, res) => {
     saved.password = undefined;
     res.status(201).json(normalizeParent(saved));
   } catch (err) {
-    res.status(500).json({ message: "Failed to create parent" });
+    console.error("Create parent error:", err);
+    res.status(500).json({
+      message: err.message || "Failed to create parent",
+      details: err.errors ? Object.values(err.errors).map((item) => item.message) : undefined,
+    });
   }
 });
 
@@ -235,7 +240,11 @@ router.patch("/:id", async (req, res) => {
     updated.password = undefined;
     res.json(normalizeParent(updated));
   } catch (err) {
-    res.status(500).json({ message: "Failed to update parent" });
+    console.error("Update parent error:", err);
+    res.status(500).json({
+      message: err.message || "Failed to update parent",
+      details: err.errors ? Object.values(err.errors).map((item) => item.message) : undefined,
+    });
   }
 });
 

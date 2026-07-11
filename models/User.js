@@ -22,6 +22,6 @@ const UserSchema = new mongoose.Schema({
   linkedStudentId: { type: mongoose.Schema.Types.ObjectId, ref: "Student", default: null },
   relationship: { type: String, default: "" },
   status: { type: String, enum: ["active", "inactive"], default: "active" },
-});
+}, { timestamps: true });
 
 module.exports = mongoose.model("User", UserSchema);
