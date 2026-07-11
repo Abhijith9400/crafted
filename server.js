@@ -16,6 +16,7 @@ const resultRoutes = require('./routes/resultRoutes');
 const statsRouter = require('./routes/statsRouter');
 const recordedClassRoutes = require('./routes/recordedClassRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
+const parentRoutes = require('./routes/parentRoutes');
 
 const app = express();
 
@@ -39,6 +40,7 @@ app.use("/api/results", resultRoutes);
 app.use("/api/stats", statsRouter);
 app.use("/api/classes", recordedClassRoutes);
 app.use("/api/payments", paymentRoutes);
+app.use("/api/parents", parentRoutes);
 // Health check endpoint
 app.get("/api/health", (req, res) => {
     res.json({ status: "ok", time: new Date().toISOString() });

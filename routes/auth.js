@@ -52,6 +52,55 @@ router.post("/teacher-login", async (req, res) => {
     }
 });
 
+// ================= PARENT LOGIN =================
+router.post("/parent-login", async (req, res) => {
+    const { username, password } = req.body;
+    try {
+        const parent = await User.findOne({
+            $or: [{ username }, { email: username }],
+            role: "parent",
+            status: "active"
+        }).populate("linkedStudentId");
+        if (!parent) return res.status(400).json({ msg: "Parent account not found" });
+
+        const isMatch = await bcrypt.compare(password, parent.password);
+        if (!isMatch) return res.status(400).json({ msg: "Invalid credentials" });
+
+        const linkedStudent = parent.linkedStudentId;
+        const token = jwt.sign(
+            { id: parent._id, role: "parent", studentId: linkedStudent?._id },
+            process.env.JWT_SECRET,
+            { expiresIn: "7d" }
+        );
+
+        res.json({
+            token,
+            role: "parent",
+            parent: {
+                id: parent._id,
+                username: parent.username,
+                name: parent.name,
+                email: parent.email,
+                phone: parent.phone,
+                linkedStudentId: linkedStudent?._id,
+                relationship: parent.relationship,
+            },
+            student: linkedStudent ? {
+                id: linkedStudent._id,
+                studentId: linkedStudent.studentId,
+                name: linkedStudent.name,
+                email: linkedStudent.email,
+                course: linkedStudent.course,
+                batch: linkedStudent.batch,
+                status: linkedStudent.status,
+            } : null
+        });
+    } catch (err) {
+        console.error("Parent login error:", err);
+        res.status(500).send("Server error");
+    }
+});
+
 // ================= STUDENT LOGIN =================
 router.post("/student-login", async (req, res) => {
     const { studentId, password } = req.body;
